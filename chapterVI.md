@@ -6,7 +6,7 @@ kubectl label namespace np-test-a team=ateam
 
 kubectl label namespace np-test-b team=bteam
 
-```yaml
+``` yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -22,7 +22,7 @@ spec:
 		- containerPort: 80
 ```
 
-```yaml
+``` yaml
 
 apiVersion: v1
 kind: Pod
@@ -39,7 +39,7 @@ spec:
 
 ```
 
-```yaml
+``` yaml
 
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -70,7 +70,7 @@ Apologies for the confusion in my previous response. You are correct, there is a
 
 In the given NetworkPolicy example:
 
-```yaml
+``` yaml
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -99,7 +99,7 @@ Again, I apologize for the confusion in my previous responses. Thank you for poi
 
 Create a NetworkPolicy to allow
 
-```yaml
+``` yaml
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -126,7 +126,7 @@ For a egress
 
 deny outgoing from np-test-b
 
-```yaml
+``` yaml
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -138,7 +138,7 @@ spec:
 	- Egress
 ```
 
-```yaml
+``` yaml
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -168,7 +168,7 @@ Service 7
 
 SSL termination.
 
-```yaml
+``` yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -182,5 +182,46 @@ spec:
 		ports:
 		- containerPort: 80
 			
+```
+Creating a Service
+
+``` yaml
+apiVersion: v1
+kind: Service
+metadata:
+    name: ingress-test-service
+spec:
+    selector:
+        app: ingress-test
+    ports:
+    - protocol: TCP
+        port: 80
+        targetPort: 80
+```
+
+
+
+Creating an Ingress
+
+``` yaml
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: ingress-test-ingress
+spec:
+    ingressClassName: nginx
+    rules:
+    - host: ingress-test.com
+        http:
+            paths:
+            - path: /
+                pathType: Prefix
+                backend:
+                    service:
+                        name: ingress-test-service
+                        port:
+                            number: 80
+
 ```
 
