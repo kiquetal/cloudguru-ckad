@@ -63,3 +63,47 @@ spec:
     
 ```
 
+#### ServiceAccount
+
+A ServiceAccount allows proessses within containers to 
+authenticate with the Kubernetes API Server. They can be
+assigned permissions via role-based accsss control, just like
+regular user accounts.
+
+
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: my-service-account
+
+```
+Create the role
+
+``` yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: list-role-pod
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list"]
+```
+
+Create the role binding
+
+``` yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: list-role-pod-binding
+subjects:
+- kind: ServiceAccount
+  name: my-service-account
+  namespace: default
+roleRef:
+ kind: Role
+ name: list-role-pod
+ apiGroup: rbac.authorization.k8s.io
+``` 
