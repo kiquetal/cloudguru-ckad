@@ -225,3 +225,20 @@ spec:
 
 ```
 
+### Summarize
+
+    Tip 1: If a Pod is not selected by any NetworkPolicy, the pod is non-isolated,
+    and all traffic is allowed
+    Tip 2: If a Pod is selected by any NetworkPolicy, traffic will be blocked unless it is
+    allowed by at least 1 NetworkPolicy that selects the Pod.
+    Tip 3: If you combine a namespaceSelector and a podSelector within the same rule,
+    the traffic must meet both the Pod- and Namespace related conditions in order to be allowed.
+    Tip 4: Even if a NetworkPolicy allows outgoing traffic from the source Pod,
+    NetworPolicies could still block the same traffic when it is incoming to
+    the destination Pod.
+
+    Services: allow you to expose an application running on a set of Pods as a network service.
+    Ingress: allow you externally access services in a cluster.
+
+
+    
