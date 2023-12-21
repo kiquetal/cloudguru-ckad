@@ -131,6 +131,19 @@ spec;
 
 You can modify the --enable-admission-plugins:NodeRestriction, NamespaceAutoProvision
 
+Exam tips
+- Tip 1: Admission controllers intercept request to the Kuberentes API
+an can be used to validate, deny or even modify the request.
+
+#### Managing compute resource usage
+
+ | Requests                                                                               | Limits| 
+ |----------------------------------------------------------------------------------------| ----- |
+ | Provides Kubernetes with an idea of how many resources a container is expected to use  | Provides an upper limit on how many resources a container is allowed to use|
+ | The cluster uses this information to select a node that has enough resources available | The cluster uses this information to terminate the container process if it attemps to use more than the allowed amount.|
+
+ResourceQuota:
+- Limits the total amount of compute resources that can be used in a namespace
 
 
 
