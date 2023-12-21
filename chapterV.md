@@ -107,3 +107,30 @@ roleRef:
  name: list-role-pod
  apiGroup: rbac.authorization.k8s.io
 ``` 
+
+#### Exploring Admision Control
+
+Admission Control intercept requests to the kubernetes API after
+authentication and authorization, but before any objects are
+persisted. They can be used to validate, deny o even modify 
+the request.
+
+
+``` yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+  namespace: new-namesapce
+spec;   
+  containers:
+  - name: busybox
+    image: busybox:stable
+    command: ['sh', '-c', 'while true; do echo "Hello, Kubernetes!"; sleep 5; done
+``` 
+
+You can modify the --enable-admission-plugins:NodeRestriction, NamespaceAutoProvision
+
+
+
+
