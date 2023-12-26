@@ -145,5 +145,22 @@ an can be used to validate, deny or even modify the request.
 ResourceQuota:
 - Limits the total amount of compute resources that can be used in a namespace
 
-
-
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: resource-pod
+  namespace: resource-namespace
+spec:
+  containers:
+  - name: busybox
+    image: busybox:stable
+    command: ['sh', '-c', 'while true; do echo "Hello, Kubernetes!"; sleep 5; done
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+```
