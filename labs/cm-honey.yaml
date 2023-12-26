@@ -1,0 +1,100 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-honey
+  namespace: hive
+data:
+  honey.cfg: |
+    There is always  money in the honey stand!
+---
+# Path: labs/pod-honey.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: hive-sec
+  namespace: hive
+type: Opaque
+data:
+  hiveToken: cGFyYWd1YXkK
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "3"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"hive-mgr","namespace":"hive"},"spec":{"replicas":3,"selector":{"matchLabels":{"app":"hive-mgr"}},"template":{"metadata":{"labels":{"app":"hive-mgr"}},"spec":{"containers":[{"command":["sh","-c","echo daily message: $(cat /config/honey.cfg); echo Authenticating with hiveToken $TOKEN; while true; do sleep 5; done"],"image":"busybox:stable","name":"busybox"}]}}}}
+  creationTimestamp: "2023-12-26T14:42:05Z"
+  generation: 3
+  name: hive-mgr
+  namespace: hive
+  resourceVersion: "15422"
+  uid: 1bb1cbb5-337e-4b3b-bead-1095fdce0fa0
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: hive-mgr
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: hive-mgr
+    spec:
+      containers:
+        - command:
+            - sh
+            - -c
+            - 'echo daily message: $(cat /config/honey.cfg); echo Authenticating with
+          hiveToken $TOKEN; while true; do sleep 5; done'
+          env:
+            - name: TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: hiveToken
+                  name: hive-sec
+          image: busybox:stable
+          imagePullPolicy: IfNotPresent
+          name: busybox
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /config
+              name: config
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - configMap:
+            defaultMode: 420
+            name: honey-config
+          name: config
+status:
+  availableReplicas: 3
+  conditions:
+    - lastTransitionTime: "2023-12-26T14:42:37Z"
+      lastUpdateTime: "2023-12-26T14:42:37Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2023-12-26T14:42:05Z"
+      lastUpdateTime: "2023-12-26T17:48:35Z"
+      message: ReplicaSet "hive-mgr-785648896" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+  observedGeneration: 3
+  readyReplicas: 3
+  replicas: 3
+  updatedReplicas: 3

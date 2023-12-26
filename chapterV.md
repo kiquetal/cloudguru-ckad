@@ -155,7 +155,6 @@ spec:
   containers:
   - name: busybox
     image: busybox:stable
-    command: ['sh', '-c', 'while true; do echo "Hello, Kubernetes!"; sleep 5; done
     resources:
       requests:
         memory: "64Mi"
@@ -163,4 +162,119 @@ spec:
       limits:
         memory: "128Mi"
         cpu: "500m"
+    command: ['sh', '-c', 'while true; do echo "Hello, Kubernetes!"; sleep 5; done
+
 ```
+
+modify /etc/kubernetes/manifests/kube-apiserver.yaml
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kube-apiserver
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - kube-apiserver
+    - --enable-admission-plugins=NodeRestriction,ResourceQuota
+    - --request-timeout=10s
+    - --service-account-signing-key-file=/etc/kubernetes/pki/sa.key
+    image: k8s.gcr.io/kube-apiserver:v1.18.
+
+```
+Creating ResourceQuoa
+Upper limit for a newspace
+```yaml
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: compute-resources
+  namespace: resource-namespace
+spec:
+  hard:
+    requests.cpu: "1"
+    requests.memory: 1Gi
+    limits.cpu: "2"
+    limits.memory: 2Gi
+```
+Attemp to create a pod that exceeds the quota
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: resource-pod
+  namespace: resource-namespace
+spec:
+  containers:
+  - name: busybox
+    image: busybox:stable
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    command: ['sh', '-c', 'while true; do echo "Hello, Kubernetes!"; sleep 5; done']
+
+```
+
+Tip 1: A resource request informs the cluster of the expected resource usage
+for a container. It is used to select a node that has enough resources available.
+
+Tip 2: A resource limit is an upper limit on the amount of resources a container
+is allowed to use. It is used to terminate the container process if it attemps to use
+more than the allowed amount.
+
+Tip 3: A ResourceQuota limits the total amount of compute resources that can be used
+in a namespace. If a user attemps to create a pod that exceeds the quota, the pod will
+be rejected.
+
+### Lab1: Managing Resources Usage in Kubernetes
+- Modify the request and limit in the pod definition
+- Create a resource quota in the namespace
+
+#### Configuring Applications with ConfigMaps and Secrets
+
+ConfigMaps: Allow you to decouple configuration artifacts from image content to keep containerized applications portable.
+Secrets: Allow you to decouple sensitive content from image content to keep containerized applications portable.
+
+| Volume Mounts | Environment Variables |
+|---------------|-----------------------|
+| Data apppears in the container's file system at runtime | Data appears in the container's environment at runtime |
+| Each top-lvel key in the config data beccomes a file name | You can specify specific keys and variable|
+
+Create a configmap
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-config-map
+data:
+  myKey: myValue
+  app.cfg: |
+    [server]
+    port=8080
+    timeout=30
+    [db]
+    host=localhost
+    port=3306
+    user=root
+    password=secret
+```
+#### Security Context
+
+ UserId and GroupID
+ 
+
+Security Contexts allow you to control the security settings for a pod or container. 
+They can be used to:
+- Run a container as a non-root user
+- Run a container with a read-only root filesystem
+- Run a container with a supplemental group
+
+
