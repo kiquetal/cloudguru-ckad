@@ -269,7 +269,7 @@ data:
 #### Security Context
 
  UserId and GroupID
- 
+ Privilege Escalation
 
 Security Contexts allow you to control the security settings for a pod or container. 
 They can be used to:
@@ -277,4 +277,19 @@ They can be used to:
 - Run a container with a read-only root filesystem
 - Run a container with a supplemental group
 
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: securitycontext-pod
+spec:
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 3000
+    fsGroup: 2000
+  containers:
+  - name: busybox
+    image: busybox:stable
+    command: ['sh', '-c', 'while true; do echo "Hello, Kubernetes!"; sleep 5; done']
+```
 
