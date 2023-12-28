@@ -69,3 +69,25 @@ kubectl top node
 kubectl rollout status deployment nginx-deployment
 the previous command will show the status of the rollout
 
+For the undo
+
+kubectl rollout undo deployment nginx-deployment
+
+#### Blue-Green Deployments
+
+A blue/green deployment strategy involves using 2 identical 
+envirnment, usually called blue and green.
+
+The blue environment is the current production environment.
+The green environment is the new environment that will be used
+
+Canary: deploy a new version of the application to a subset of users
+A small percentage of users will be routed to the new version of the application
+
+#### Helm
+
+Is a package management tool for applications that run in Kubernetes. It allows you to
+easily install software in your cluster, alongside the necessary kuberentes configuration.
+
+
+
