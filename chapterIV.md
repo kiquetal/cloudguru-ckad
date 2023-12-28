@@ -54,4 +54,18 @@ spec:
       periodSeconds: 5
 ```
 
-    
+#### Monitor kubernetes Applications
+
+kubectl top pod
+kubectl top node
+
+
+#### Rolling Updates
+
+- kubectl set image deployment nginx-deployment nginx=nginx:1.9.1 --record
+
+- kubectl edit deployment nginx-deployment
+
+kubectl rollout status deployment nginx-deployment
+the previous command will show the status of the rollout
+
