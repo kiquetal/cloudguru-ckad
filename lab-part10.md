@@ -72,3 +72,112 @@ the original main Deployment in order to accomplish this.
 he Service is a NodePort Service, and you can test it by reaching out to port 30082 on any 
 of the cluster nodes, for example: curl k8s-control:30082
 
+auth.yaml
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth
+  namespace: canary
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auth
+      env: main
+  template:
+    metadata:
+      labels:
+        app: auth
+        env: main
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:stable
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: labels
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: labels
+        downwardAPI:
+          items:
+          - path: index.html
+            fieldRef:
+              fieldPath: metadata.labels
+ ```
+auth-canary
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-canary
+  namespace: canary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+      env: canary
+  template:
+    metadata:
+      labels:
+        app: auth
+        env: canary
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:stable
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: labels
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: labels
+        downwardAPI:
+          items:
+          - path: index.html
+            fieldRef:
+              fieldPath: metadata.labels
+```
+
+auth-svc
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"auth-svc","namespace":"canary"},"spec":{"ports":[{"nodePort":30082,"port":80,"protocol":"TCP","targetPort":80}],"selector":{"app":"auth","env":"main"},"type":"NodePort"}}
+  creationTimestamp: "2023-12-30T01:20:45Z"
+  name: auth-svc
+  namespace: canary
+  resourceVersion: "5541"
+  uid: 0728b5af-a6b8-4663-a7ff-0f3248dd2a71
+spec:
+  clusterIP: 10.109.98.165
+  clusterIPs:
+  - 10.109.98.165
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - nodePort: 30082
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: auth
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
+```
+
+The modify the deployment to obtain 3 replica for the main and 1 for the canary
